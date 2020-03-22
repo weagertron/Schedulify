@@ -7,7 +7,7 @@ const configs = {
         issuer: 'https://demo.identityserver.io',
         clientId: 'b2a116291fc64d1eb16d1ed2ef4b052a', // available on the app page
         clientSecret: '5d0cfd5ea535457da02c427dd8424ec4', // click "show client secret" to see this
-        redirectUrl: 'com.schedulify:/Login', // 'io.identityserver.demo:/ oauthredirect', // 'com.rnappauthexample:/oauth', // the redirect you defined after creating the app
+        redirectUrl: 'com.schedulify:/Login', // the redirect you defined after creating the app
         scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'], // the scopes you need to access
         serviceConfiguration: {
             authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -17,7 +17,7 @@ const configs = {
     auth0: {
         clientId: 'b2a116291fc64d1eb16d1ed2ef4b052a', // available on the app page
         clientSecret: '5d0cfd5ea535457da02c427dd8424ec4', // click "show client secret" to see this
-        redirectUrl: 'com.schedulify:/Login', // 'io.identityserver.demo:/ oauthredirect', // 'com.rnappauthexample:/oauth', // the redirect you defined after creating the app
+        redirectUrl: 'com.schedulify:/Login', // the redirect you defined after creating the app
         scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'], // the scopes you need to access
         serviceConfiguration: {
             authorizationEndpoint: 'https://accounts.spotify.com/authorize',
