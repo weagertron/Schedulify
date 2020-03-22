@@ -45,17 +45,6 @@ export default function Login(props) {
         });
     }, []);
 
-    const onLogin = async () => {
-        //const { email, password } = this.state
-        //try {
-        //  if (email.length > 0 && password.length > 0) {
-        props.navigation.navigate('App');
-        //}
-        //} catch (error) {
-        //    alert(error)
-        //}
-    }
-
     const handleAuthorize = useCallback(
         async provider => {
             try {
@@ -91,17 +80,11 @@ export default function Login(props) {
 
     return (
         <View style={styles.container}>
-            {/* <Text>Login</Text> */}
             <Button
                 title='Login with Spotify'
                 style={styles.loginButton}
-                // onPress={onLogin}
                 onPress={() => handleAuthorize('identityserver')}
             />
-            {/* <Button
-                title='Go to Signup'
-                onPress={() => props.navigation.navigate('Signup')}
-            /> */}
         </View>
     )
 }
