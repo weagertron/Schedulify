@@ -5,9 +5,10 @@ INJECTED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\a
 INJECTED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\app\src\main\AndroidManifest.xml:1:1-26:12
 INJECTED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\app\src\main\AndroidManifest.xml:1:1-26:12
 MERGED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\app\src\main\AndroidManifest.xml:1:1-26:12
-MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-community_masked-view] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\@react-native-community\masked-view\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-app-auth] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-app-auth\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
+MERGED from [:react-native-encrypted-storage] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-encrypted-storage\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
+MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-safe-area-context] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-safe-area-context\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-screens] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-screens\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [com.facebook.react:react-native:0.61.5] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\e33dbdc01ed6d64e49a99812aaf5d03d\AndroidManifest.xml:2:1-13:12
@@ -24,6 +25,7 @@ MERGED from [com.facebook.fresco:imagepipeline-base:2.0.0] C:\Users\lewwe\.gradl
 MERGED from [com.facebook.soloader:soloader:0.6.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\88855e89f3fc1ffeb21e6b4f909b9bf1\AndroidManifest.xml:2:1-13:12
 MERGED from [net.openid:appauth:0.7.1] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\ae96548ecb9278876b43f7161a6d5928\AndroidManifest.xml:15:1-46:12
 MERGED from [androidx.browser:browser:1.2.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\30054168b0a4eed9861064582e47e511\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.security:security-crypto:1.0.0-alpha02] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\4c373bb69d7a35d6608df46ffc1b58bf\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\6aa07ba8c4b2e62288b6ca45f213bd5a\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.fragment:fragment:1.2.1] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\901cf512aa9a4a6d67e1a662865dc96b\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\5a82713b6d1fbb09e9d0c19f5bfda5bf\AndroidManifest.xml:17:1-24:12
@@ -147,12 +149,14 @@ uses-sdk
 INJECTED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\app\src\main\AndroidManifest.xml
 INJECTED from C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\android\app\src\main\AndroidManifest.xml
-MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
-MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-community_masked-view] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\@react-native-community\masked-view\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-community_masked-view] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\@react-native-community\masked-view\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-app-auth] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-app-auth\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-app-auth] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-app-auth\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-encrypted-storage] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-encrypted-storage\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-encrypted-storage] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-encrypted-storage\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-safe-area-context] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-safe-area-context\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-safe-area-context] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-safe-area-context\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-screens] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-screens\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
@@ -185,6 +189,8 @@ MERGED from [net.openid:appauth:0.7.1] C:\Users\lewwe\.gradle\caches\transforms-
 MERGED from [net.openid:appauth:0.7.1] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\ae96548ecb9278876b43f7161a6d5928\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.browser:browser:1.2.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\30054168b0a4eed9861064582e47e511\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.browser:browser:1.2.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\30054168b0a4eed9861064582e47e511\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.security:security-crypto:1.0.0-alpha02] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\4c373bb69d7a35d6608df46ffc1b58bf\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.security:security-crypto:1.0.0-alpha02] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\4c373bb69d7a35d6608df46ffc1b58bf\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\6aa07ba8c4b2e62288b6ca45f213bd5a\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\6aa07ba8c4b2e62288b6ca45f213bd5a\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.fragment:fragment:1.2.1] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\901cf512aa9a4a6d67e1a662865dc96b\AndroidManifest.xml:20:5-22:41

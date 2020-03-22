@@ -14,7 +14,6 @@ apiCall = (uri, type, token, body, cb) => {
     fetch(uri, fetchParams)
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log('responsejson: ', responseJson);
             cb(responseJson);
         })
         .catch((error) => {

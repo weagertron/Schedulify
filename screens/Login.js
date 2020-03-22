@@ -1,30 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { authorize, refresh, revoke, prefetchConfiguration } from 'react-native-app-auth';
+import EncryptedStorage from 'react-native-encrypted-storage';
+const authConfig = require('../config/authConfig').default;
 
-const configs = {
-    identityserver: {
-        issuer: 'https://demo.identityserver.io',
-        clientId: 'b2a116291fc64d1eb16d1ed2ef4b052a', // available on the app page
-        clientSecret: '5d0cfd5ea535457da02c427dd8424ec4', // click "show client secret" to see this
-        redirectUrl: 'com.schedulify:/Login', // the redirect you defined after creating the app
-        scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'], // the scopes you need to access
-        serviceConfiguration: {
-            authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-            tokenEndpoint: 'https://accounts.spotify.com/api/token',
-        },
-    },
-    auth0: {
-        clientId: 'b2a116291fc64d1eb16d1ed2ef4b052a', // available on the app page
-        clientSecret: '5d0cfd5ea535457da02c427dd8424ec4', // click "show client secret" to see this
-        redirectUrl: 'com.schedulify:/Login', // the redirect you defined after creating the app
-        scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'], // the scopes you need to access
-        serviceConfiguration: {
-            authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-            tokenEndpoint: 'https://accounts.spotify.com/api/token',
-        },
-    }
-};
+const configs = authConfig.auth;
 
 const defaultAuthState = {
     hasLoggedInOnce: false,
@@ -38,38 +18,54 @@ export default function Login(props) {
 
     const [authState, setAuthState] = useState(defaultAuthState);
 
+    const storeUserSession = async (auth) => {
+        try {
+            await EncryptedStorage.setItem('userSession', JSON.stringify(auth));
+        } catch (error) {
+            console.log('Error setting "userSession: "', error);
+        }
+    }
+
     useEffect(() => {
         prefetchConfiguration({
             warmAndPrefetchChrome: true,
             ...configs.identityserver
         });
+
+        awaitAuth = async () => {
+            try {
+
+                const authObject = await EncryptedStorage.getItem("userSession");
+
+                if (authObject !== undefined) {
+                    props.navigation.navigate('Home');
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        awaitAuth();
+
     }, []);
 
     const handleAuthorize = useCallback(
         async provider => {
             try {
                 const config = configs[provider];
-                const newAuthState = await authorize(config);
+                const authItems = await authorize(config);
 
-                setAuthState({
+                const newAuthState = {
                     hasLoggedInOnce: true,
                     provider: provider,
-                    ...newAuthState
-                });
+                    ...authItems
+                }
 
-                console.log('newAuth: ', {
-                    hasLoggedInOnce: true,
-                    provider: provider,
-                    ...newAuthState
-                });
+                setAuthState(newAuthState);
+                await storeUserSession(newAuthState);
 
-                props.navigation.navigate('Home', {
-                    auth: {
-                        hasLoggedInOnce: true,
-                        provider: provider,
-                        ...newAuthState
-                    }
-                });
+                props.navigation.navigate('Home');
 
             } catch (error) {
                 Alert.alert('Failed to log in', error.message);

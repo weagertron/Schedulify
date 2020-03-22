@@ -18,6 +18,8 @@ import com.schedulify.R;
 import org.reactnative.maskedview.RNCMaskedViewPackage;
 // react-native-app-auth
 import com.rnappauth.RNAppAuthPackage;
+// react-native-encrypted-storage
+import com.emeraldsanto.encryptedstorage.RNEncryptedStoragePackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 // react-native-safe-area-context
@@ -71,6 +73,7 @@ public class PackageList {
       new MainReactPackage(mConfig),
       new RNCMaskedViewPackage(),
       new RNAppAuthPackage(),
+      new RNEncryptedStoragePackage(),
       new RNGestureHandlerPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage()
