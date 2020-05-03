@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert } from 'react-native';
 import { authorize, refresh, revoke, prefetchConfiguration } from 'react-native-app-auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import * as webHelper from '../helpers/helper';
 const authConfig = require('../config/authConfig').default;
 
 const configs = authConfig.auth;
@@ -33,17 +34,10 @@ export default function Login(props) {
         });
 
         awaitAuth = async () => {
-            try {
-
-                const authObject = await EncryptedStorage.getItem("userSession");
-
-                if (authObject !== undefined) {
+            webHelper.getAuth().then(auth => {
+                if (auth)
                     props.navigation.navigate('Home');
-                }
-
-            } catch (error) {
-                console.log(error);
-            }
+            });
         }
 
         awaitAuth();

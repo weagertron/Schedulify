@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import LogoutButton from '../components/LogoutButton';
-const webHelper = require('../helpers/apiCall').default;
+import * as webHelper from '../helpers/helper';
 const configs = require('../config/authConfig').default;
 
 export default function Home({ route, navigation }) {
@@ -11,30 +10,19 @@ export default function Home({ route, navigation }) {
     const [user, setUser] = useState(undefined);
 
     useEffect(() => {
-        retrieveAuth();
+        webHelper.getAuth().then(result => {
+            setAuth(result);
+        })
     }, [])
 
     useEffect(() => {
-
         if (auth && Object.keys(auth).length > 0) {
-            webHelper.apiCall('https://api.spotify.com/v1/me', 'GET', auth.accessToken, {}, (res) => {
-                setUser(res);
-            });
+            webHelper.apiCall('https://api.spotify.com/v1/me', 'GET', {}).then(res => {
+                if (res)
+                    setUser(res);
+            })
         }
     }, [auth])
-
-    const retrieveAuth = async () => {
-        try {
-
-            const authObject = await EncryptedStorage.getItem("userSession");
-
-            if (authObject !== undefined) {
-                setAuth(JSON.parse(authObject));
-            }
-        } catch (error) {
-            console.log('Error retrieving "userSession: "', error);
-        }
-    }
 
     if (!user) {
         return (
@@ -50,7 +38,7 @@ export default function Home({ route, navigation }) {
                 {user &&
                     <>
                         <Text>Welcome {user.display_name}!</Text>
-                        <LogoutButton token={auth.accessToken} navigation={navigation} />
+                        <LogoutButton navigation={navigation} />
                     </>
                 }
             </View>
