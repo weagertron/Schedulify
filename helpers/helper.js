@@ -62,7 +62,7 @@ async function apiCall(uri, type, body) {
             if (type !== 'GET' && Object.keys(body).length > 0)
                 fetchParams = { ...fetchParams, body: body };
 
-            fetch(uri, fetchParams)
+            fetch(`https://api.spotify.com/v1/${uri}`, fetchParams)
                 .then((response) => response.json())
                 .then((responseJson) => {
                     resolve(responseJson);
