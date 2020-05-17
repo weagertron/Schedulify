@@ -75,8 +75,172 @@ async function apiCall(uri, type, body) {
     })
 }
 
+async function getArtist(artistName) {
+    return await new Promise(resolve => {
+        apiCall(
+            `search?q=${artistName.replace(' ', '%20')}&type=artist`,
+            'GET',
+            {}
+        ).then(res => {
+            resolve(res.artists.items[0]);
+        })
+    })
+}
+
+async function getArtistsAlbums(artistId) {
+    return await new Promise(resolve => {
+        apiCall(
+            `artists/${artistId}/albums?include_groups=album&country=from_token`,
+            'GET',
+            {}
+        ).then(res => {
+            resolve(res.items);
+        })
+    })
+}
+
+async function getArtistsTopTracks(artistId) {
+    return await new Promise(resolve => {
+        apiCall(
+            `artists/${artistId}/top-tracks?country=from_token`,
+            'GET',
+            {}
+        ).then(res => {
+            resolve(res.tracks);
+        })
+    })
+}
+
+async function getAlbumTracks(albumId) {
+    return await new Promise(resolve => {
+        apiCall(
+            `albums/${albumId}/tracks`,
+            'GET',
+            {}
+        ).then(res => {
+            resolve(res.items);
+        })
+    })
+}
+
+async function buildPlaylist(params) {
+    return await new Promise(mainResolve => {
+
+        let paramPromises = [];
+        let allTracks = [];
+
+        console.log('params: ', params);
+
+        let expectedTracks = 0;
+
+        params.map(p => expectedTracks += p.amount);
+
+        console.log('');
+        console.log(`Expecting ${expectedTracks}`);
+        console.log('');
+        console.log('Building...');
+        console.log('');
+
+        // loop through all the rules
+        params.map(param => {
+
+            // create a new promise per rule
+            paramPromises.push(new Promise(paramResolve => {
+
+                // determine what api calls to perform based on the option
+                if (param.type === 'random') {
+
+                    // get the artist
+                    getArtist(param.artist).then(artist => {
+
+                        let { id, name } = artist;
+
+                        // get all albums
+                        getArtistsAlbums(id).then(albums => {
+
+                            // store album ids in an array
+                            let albumArray = albums.map(album => album.id);
+
+                            // create promises for the api calls for each album
+                            let trackPromises = [];
+
+                            // array to store all the ids for artist's tracks
+                            let allArtistTracks = [];
+
+                            // populate "allArtistTracks" with the IDs
+                            albumArray.map(albumId => {
+                                trackPromises.push(new Promise(tracksResolve => {
+                                    getAlbumTracks(albumId).then(tracks => {
+
+                                        tracks.map(track => {
+                                            allArtistTracks.push(track.id);
+                                        })
+
+                                        tracksResolve();
+                                    })
+                                }))
+                            })
+
+                            Promise.all(trackPromises).then(() => {
+
+                                // select a random amount of tracks from the array into the "allTracks" array
+                                allArtistTracks.sort(() => .5 - Math.random()).slice(0, param.amount).map(trackId => {
+                                    allTracks.push(trackId);
+                                })
+
+                                paramResolve();
+                            })
+                        })
+                    })
+                } else {
+
+                    // search for the artist
+                    getArtist(param.artist).then(artist => {
+
+                        let { id, name } = artist;
+
+                        // get the artist's top tracks
+                        getArtistsTopTracks(id).then(tracks => {
+
+                            // add the desired amount of tracks to the "allTracks" array
+                            tracks.slice(0, param.amount).map(t => {
+                                allTracks.push(t.id);
+                            })
+
+                            paramResolve();
+                        })
+                    })
+                }
+            }))
+        })
+
+        // once all params have been processed we have a full array of the track IDs
+        Promise.all(paramPromises).then(() => {
+
+            // here would be where we would actually create the playlist
+
+            // output the tracks we have retrieved
+            apiCall(`tracks?ids=${allTracks.join(',')}`, 'GET', {}).then(tracks => {
+
+                console.log('');
+                console.log('Returned tracks count: ', allTracks.length);
+                console.log('');
+                console.log('Returned tracks: ', tracks.tracks.map(t => t.name));
+                console.log('');
+
+                mainResolve(allTracks);
+            })
+        })
+    })
+}
+
 export {
     apiCall,
     revokeToken,
-    getAuth
+    getAuth,
+    getArtist,
+    getArtistsAlbums,
+    getArtistsTopTracks,
+    getAlbumTracks,
+    buildPlaylist
 }
