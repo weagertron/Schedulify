@@ -11,6 +11,7 @@ MERGED from [:react-native-encrypted-storage] C:\Users\lewwe\Documents\React Nat
 MERGED from [:react-native-gesture-handler] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-gesture-handler\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-safe-area-context] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-safe-area-context\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-screens] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-screens\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
+MERGED from [:react-native-vector-icons] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-vector-icons\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-11:12
 MERGED from [com.facebook.react:react-native:0.61.5] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\e33dbdc01ed6d64e49a99812aaf5d03d\AndroidManifest.xml:2:1-13:12
 MERGED from [org.webkit:android-jsc:r245459] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\ca9f1fd5bbf204cc0c869409f960808e\AndroidManifest.xml:2:1-11:12
 MERGED from [com.google.android.material:material:1.1.0] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\1c98104244571cfec9f694b928624f28\AndroidManifest.xml:17:1-24:12
@@ -161,6 +162,8 @@ MERGED from [:react-native-safe-area-context] C:\Users\lewwe\Documents\React Nat
 MERGED from [:react-native-safe-area-context] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-safe-area-context\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-screens] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-screens\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-screens] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-screens\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-vector-icons] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-vector-icons\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-vector-icons] C:\Users\lewwe\Documents\React Native\Spotify\Schedulify\node_modules\react-native-vector-icons\android\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [com.facebook.react:react-native:0.61.5] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\e33dbdc01ed6d64e49a99812aaf5d03d\AndroidManifest.xml:7:5-9:41
 MERGED from [com.facebook.react:react-native:0.61.5] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\e33dbdc01ed6d64e49a99812aaf5d03d\AndroidManifest.xml:7:5-9:41
 MERGED from [org.webkit:android-jsc:r245459] C:\Users\lewwe\.gradle\caches\transforms-2\files-2.1\ca9f1fd5bbf204cc0c869409f960808e\AndroidManifest.xml:7:5-9:41
