@@ -1,5 +1,5 @@
 import React from 'react';
-import { revoke } from 'react-native-app-auth';
+import { revoke, refresh } from 'react-native-app-auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
 const configs = require('../config/authConfig').default;
 
@@ -7,10 +7,46 @@ const getAuth = async (navigation) => {
     return await new Promise((resolve) => {
         try {
             EncryptedStorage.getItem("userSession").then(auth => {
-                if (auth)
-                    resolve(JSON.parse(auth));
-                else
+                if (auth) {
+
+                    let parsedAuth = JSON.parse(auth);
+
+                    // check accessTokenExpirationDate field
+                    let currentExpiry = Date.parse(parsedAuth.accessTokenExpirationDate);
+
+                    // if expired, call a refresh 
+                    if (currentExpiry < Date.now()) {
+
+                        console.log('Token has expired!');
+
+                        // grab the new accessToken and accessTokenExpirationDate
+                        refresh(configs.auth.identityserver, { refreshToken: parsedAuth.refreshToken }).then(newAuth => {
+
+                            if (newAuth) {
+
+                                let authToSet = {
+                                    ...parsedAuth,
+                                    accessToken: newAuth.accessToken,
+                                    accessTokenExpirationDate: newAuth.accessTokenExpirationDate
+                                }
+
+                                console.log('New Auth Object: ', authToSet);
+
+                                EncryptedStorage.setItem('userSession', JSON.stringify(authToSet)).then(() => {
+                                    resolve(authToSet);
+                                })
+
+                            } else {
+                                resolve(undefined);
+                            }
+                        })
+                    } else {
+                        // the access token is still valid so return it
+                        resolve(parsedAuth);
+                    }
+                } else {
                     resolve(undefined);
+                }
             });
 
         } catch (error) {
@@ -52,6 +88,7 @@ async function apiCall(uri, type, body) {
     return await new Promise((resolve) => {
         getAuth().then(auth => {
             let fetchParams = {
+                method: type,
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -60,7 +97,7 @@ async function apiCall(uri, type, body) {
             }
 
             if (type !== 'GET' && Object.keys(body).length > 0)
-                fetchParams = { ...fetchParams, body: body };
+                fetchParams = { ...fetchParams, body: JSON.stringify(body) };
 
             fetch(`https://api.spotify.com/v1/${uri}`, fetchParams)
                 .then((response) => response.json())
@@ -123,17 +160,14 @@ async function getAlbumTracks(albumId) {
     })
 }
 
-async function buildPlaylist(params) {
+async function buildPlaylist(options) {
     return await new Promise(mainResolve => {
 
         let paramPromises = [];
         let allTracks = [];
-
-        console.log('params: ', params);
-
         let expectedTracks = 0;
 
-        params.map(p => expectedTracks += p.amount);
+        options.params.map(p => expectedTracks += p.amount);
 
         console.log('');
         console.log(`Expecting ${expectedTracks}`);
@@ -142,7 +176,7 @@ async function buildPlaylist(params) {
         console.log('');
 
         // loop through all the rules
-        params.map(param => {
+        options.params.map(param => {
 
             // create a new promise per rule
             paramPromises.push(new Promise(paramResolve => {
@@ -173,7 +207,7 @@ async function buildPlaylist(params) {
                                     getAlbumTracks(albumId).then(tracks => {
 
                                         tracks.map(track => {
-                                            allArtistTracks.push(track.id);
+                                            allArtistTracks.push(track.uri);
                                         })
 
                                         tracksResolve();
@@ -204,7 +238,7 @@ async function buildPlaylist(params) {
 
                             // add the desired amount of tracks to the "allTracks" array
                             tracks.slice(0, param.amount).map(t => {
-                                allTracks.push(t.id);
+                                allTracks.push(t.uri);
                             })
 
                             paramResolve();
@@ -217,18 +251,34 @@ async function buildPlaylist(params) {
         // once all params have been processed we have a full array of the track IDs
         Promise.all(paramPromises).then(() => {
 
+            console.log('Actual track count: ', allTracks.length);
+            console.log('');
+
             // here would be where we would actually create the playlist
+            apiCall('me/playlists', 'GET', {}).then(playlists => {
 
-            // output the tracks we have retrieved
-            apiCall(`tracks?ids=${allTracks.join(',')}`, 'GET', {}).then(tracks => {
+                let existingPlaylist = playlists.items.find(p => p.name === options.name);
 
-                console.log('');
-                console.log('Returned tracks count: ', allTracks.length);
-                console.log('');
-                console.log('Returned tracks: ', tracks.tracks.map(t => t.name));
-                console.log('');
-
-                mainResolve(allTracks);
+                // see if the playlist already exists
+                if (existingPlaylist) {
+                    // playlist exists so we replace the tracks
+                    apiCall(`playlists/${existingPlaylist.id}/tracks`, 'PUT', { uris: [] }).then(() => {
+                        apiCall(`playlists/${existingPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
+                            console.log(`Tracks replaced in "${existingPlaylist.name}" playlist.`);
+                            mainResolve();
+                        })
+                    })
+                } else {
+                    // playlist doesn't exist so create it and insert the tracks
+                    apiCall('me', 'GET', {}).then(user => {
+                        apiCall(`users/${user.id}/playlists`, 'POST', { name: options.name, public: options.public }).then(newPlaylist => {
+                            apiCall(`playlists/${newPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
+                                console.log(`"${newPlaylist.name}" playlist created and tracks inserted`);
+                                mainResolve();
+                            })
+                        })
+                    })
+                }
             })
         })
     })

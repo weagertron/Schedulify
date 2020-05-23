@@ -33,39 +33,40 @@ export default function Home({ route, navigation }) {
         // "https://api.spotify.com/v1/search?q=tania%20bowra&type=artist" 
         // -H "Authorization: Bearer {your access token}"
 
-        // sample of rules to follow
-        let params = [
-            {
-                artist: 'Foo Fighters',
-                type: 'random',
-                amount: 5,
-                options: {
-                    excludeLive: true // not sure how to do this...
-                    // includeSingles?
+        let playlistOptions = {
+            name: 'MyNewPlaylist',
+            public: false,
+            params: [
+                {
+                    artist: 'Foo Fighters',
+                    type: 'random',
+                    amount: 5,
+                    options: {
+                        excludeLive: true // not sure how to do this...
+                        // includeSingles?
+                    }
+                },
+                {
+                    artist: 'red hot chili peppers',
+                    type: 'top',
+                    amount: 6,
+                    options: {
+                        excludeLive: true
+                    }
+                },
+                {
+                    artist: 'muse',
+                    type: 'random',
+                    amount: 3,
+                    options: {
+                        excludeLive: true
+                    }
                 }
-            },
-            {
-                artist: 'red hot chili peppers',
-                type: 'top',
-                amount: 6,
-                options: {
-                    excludeLive: true
-                }
-            },
-            {
-                artist: 'muse',
-                type: 'random',
-                amount: 3,
-                options: {
-                    excludeLive: true
-                }
-            }
-        ];
+            ]
+        }
 
-        webHelper.buildPlaylist(params).then(res => {
-            console.log('');
-            console.log('finished: ', res);
-            console.log('');
+        webHelper.buildPlaylist(playlistOptions).then(res => {
+            console.log('Finished making playlist!')
         })
     }
 
