@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Header, Button, ListItem } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import LogoutButton from '../components/LogoutButton';
 import * as webHelper from '../helpers/helper';
 const configs = require('../config/authConfig').default;
 
-export default function Home({ route, navigation }) {
+export default function Home({ navigation }) {
 
     const [auth, setAuth] = useState({});
     const [user, setUser] = useState(undefined);
+    const [buildRunning, setBuildRunning] = useState(false);
 
     useEffect(() => {
         webHelper.getAuth().then(result => {
@@ -24,6 +27,10 @@ export default function Home({ route, navigation }) {
         }
     }, [auth])
 
+    const items = [
+        'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test', 'Test'
+    ]
+
     const test = () => {
 
         // How to get random items from array
@@ -33,7 +40,10 @@ export default function Home({ route, navigation }) {
         // "https://api.spotify.com/v1/search?q=tania%20bowra&type=artist" 
         // -H "Authorization: Bearer {your access token}"
 
+        setBuildRunning(true);
+
         let playlistOptions = {
+            uid: 'fsdnfkjsdnkj',
             name: 'MyNewPlaylist',
             public: false,
             params: [
@@ -67,6 +77,7 @@ export default function Home({ route, navigation }) {
 
         webHelper.buildPlaylist(playlistOptions).then(res => {
             console.log('Finished making playlist!')
+            setBuildRunning(false);
         })
     }
 
@@ -80,15 +91,38 @@ export default function Home({ route, navigation }) {
         )
     } else {
         return (
-            <View style={styles.container}>
-                {user &&
-                    <>
-                        <Text>Welcome {user.display_name}!</Text>
-                        <LogoutButton navigation={navigation} />
-                        <Button title={'Sample'} onPress={test} />
-                    </>
-                }
-            </View>
+            <>
+                <Header
+                    leftComponent={<Button title='Sample' onPress={test} loading={buildRunning} />}
+                    centerComponent={{ text: `Welcome ${user.display_name}!`, style: { color: '#fff' } }}
+                    rightComponent={<LogoutButton navigation={navigation} />}
+                />
+                <ScrollView>
+
+                    {items.map((i, key) => (
+                        <ListItem
+                            key={key}
+                            onPress={() => navigation.navigate('Editor', { name: 'testName' })}
+                            // leftAvatar={{ source: { uri: l.avatar_url } }}
+                            title={i}
+                            subtitle={'Subtitle'}
+                            bottomDivider
+                            // badge={{ value: 3, textStyle: { color: 'white' }, badgeStyle: { backgroundColor: 'blue' } }}
+                            // chevron
+                            rightTitle={
+                                <Icon.Button
+                                    name='sync'
+                                    size={15}
+                                    iconStyle={{
+                                        marginRight: 0
+                                    }}
+                                    backgroundColor='gray'
+                                />
+                            }
+                        />
+                    ))}
+                </ScrollView>
+            </>
         )
     }
 }

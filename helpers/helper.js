@@ -265,6 +265,7 @@ async function buildPlaylist(options) {
                     apiCall(`playlists/${existingPlaylist.id}/tracks`, 'PUT', { uris: [] }).then(() => {
                         apiCall(`playlists/${existingPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
                             console.log(`Tracks replaced in "${existingPlaylist.name}" playlist.`);
+                            console.log('');
                             mainResolve();
                         })
                     })
@@ -274,6 +275,7 @@ async function buildPlaylist(options) {
                         apiCall(`users/${user.id}/playlists`, 'POST', { name: options.name, public: options.public }).then(newPlaylist => {
                             apiCall(`playlists/${newPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
                                 console.log(`"${newPlaylist.name}" playlist created and tracks inserted`);
+                                console.log('');
                                 mainResolve();
                             })
                         })
