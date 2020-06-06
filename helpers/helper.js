@@ -19,27 +19,32 @@ const getAuth = async (navigation) => {
 
                         console.log('Token has expired!');
 
-                        // grab the new accessToken and accessTokenExpirationDate
-                        refresh(configs.auth.identityserver, { refreshToken: parsedAuth.refreshToken }).then(newAuth => {
+                        try {
+                            // grab the new accessToken and accessTokenExpirationDate
+                            refresh(configs.auth.identityserver, { refreshToken: parsedAuth.refreshToken }).then(newAuth => {
 
-                            if (newAuth) {
+                                if (newAuth) {
 
-                                let authToSet = {
-                                    ...parsedAuth,
-                                    accessToken: newAuth.accessToken,
-                                    accessTokenExpirationDate: newAuth.accessTokenExpirationDate
+                                    let authToSet = {
+                                        ...parsedAuth,
+                                        accessToken: newAuth.accessToken,
+                                        accessTokenExpirationDate: newAuth.accessTokenExpirationDate
+                                    }
+
+                                    console.log('New Auth Object: ', authToSet);
+
+                                    EncryptedStorage.setItem('userSession', JSON.stringify(authToSet)).then(() => {
+                                        resolve(authToSet);
+                                    })
+
+                                } else {
+                                    resolve(undefined);
                                 }
-
-                                console.log('New Auth Object: ', authToSet);
-
-                                EncryptedStorage.setItem('userSession', JSON.stringify(authToSet)).then(() => {
-                                    resolve(authToSet);
-                                })
-
-                            } else {
-                                resolve(undefined);
-                            }
-                        })
+                            })
+                        } catch (err) {
+                            console.log('error refreshing token: ', err);
+                            resolve(undefined);
+                        }
                     } else {
                         // the access token is still valid so return it
                         resolve(parsedAuth);
@@ -53,6 +58,42 @@ const getAuth = async (navigation) => {
             console.error('Error retrieving auth: ', error);
             resolve(undefined);
         }
+    })
+}
+
+const getUserPlaylists = async (userId) => {
+    return await new Promise(resolve => {
+        EncryptedStorage.getItem(`userData.${userId}.playlists`).then(playlists => {
+            try {
+
+                console.log('user playlists: ', playlists);
+
+                if (playlists) {
+                    resolve(JSON.parse(playlists));
+                } else {
+                    console.log('no playlists exist, create empty array.');
+                    EncryptedStorage.setItem(`userData.${userId}.playlists`, JSON.stringify([])).then(() => {
+                        resolve([])
+                    })
+                }
+            } catch (err) {
+                console.log('Error retrieving user playlists: ', err);
+                resolve([]);
+            }
+        })
+    })
+}
+
+const getPlaylistById = async (userId, playlistId) => {
+    return await new Promise(resolve => {
+        getUserPlaylists(userId).then(playlists => {
+            let foundPlaylist = playlists.find(p => p.id === playlistId);
+
+            if (foundPlaylist)
+                resolve(foundPlaylist);
+            else
+                resolve(undefined);
+        })
     })
 }
 
@@ -105,9 +146,74 @@ async function apiCall(uri, type, body) {
                     resolve(responseJson);
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.error(`Error calling spotify API at "${uri}": `, error);
                     resolve(undefined);
                 });
+        })
+    })
+}
+
+const getUserData = async () => {
+    return new Promise(resolve => {
+        apiCall('me', 'GET', {}).then(res => {
+            if (res) {
+                try {
+                    EncryptedStorage.getItem('userData').then(data => {
+                        if (!data) {
+
+                            console.log('No data yet, create it!');
+
+                            let newUserData = {
+                                [res.id]: {
+                                    playlists: []
+                                }
+                            }
+
+                            EncryptedStorage.setItem('userData', JSON.stringify(newUserData)).then(() => {
+                                console.log('userData created.');
+                                resolve(JSON.parse(res));
+                            })
+
+                        } else {
+                            EncryptedStorage.getItem(`userData.${res.id}`).then(userData => {
+                                if (!userData) {
+                                    let retrievedData = JSON.parse(data);
+                                    let newUserData = {
+                                        ...retrievedData,
+                                        [res.id]: {
+                                            playlists: []
+                                        }
+                                    }
+
+                                    EncryptedStorage.setItem('userData', JSON.stringify(newUserData)).then(() => {
+                                        resolve(res);
+                                    })
+                                } else {
+                                    resolve(JSON.parse(res));
+                                }
+                            })
+                        }
+                    })
+                } catch (ex) {
+                    console.log('error during getUserData: ', ex);
+                    resolve(undefined);
+                }
+            } else {
+                resolve(undefined);
+            }
+        })
+    })
+}
+
+const deletePlaylist = async (userId, playlistId) => {
+    return new Promise(resolve => {
+        getUserPlaylists(userId).then(playlists => {
+            let newPlaylists = playlists.filter(p => p.id !== playlistId);
+
+            EncryptedStorage.setItem(`userData.${userId}.playlists`, JSON.stringify(newPlaylists)).then(() => {
+                console.log('Deleted!');
+                resolve();
+            })
         })
     })
 }
@@ -160,128 +266,127 @@ async function getAlbumTracks(albumId) {
     })
 }
 
-async function buildPlaylist(options) {
+async function buildPlaylist(userId, playlistId) {
     return await new Promise(mainResolve => {
 
-        let paramPromises = [];
-        let allTracks = [];
-        let expectedTracks = 0;
+        getPlaylistById(userId, playlistId).then(playlist => {
 
-        options.params.map(p => expectedTracks += p.amount);
+            if (playlist) {
 
-        console.log('');
-        console.log(`Expecting ${expectedTracks}`);
-        console.log('');
-        console.log('Building...');
-        console.log('');
+                let paramPromises = [];
+                let allTracks = [];
 
-        // loop through all the rules
-        options.params.map(param => {
+                // loop through all the rules
+                Object.keys(playlist.items).map(itemId => {
 
-            // create a new promise per rule
-            paramPromises.push(new Promise(paramResolve => {
+                    let param = playlist.items[itemId];
 
-                // determine what api calls to perform based on the option
-                if (param.type === 'random') {
+                    // create a new promise per rule
+                    paramPromises.push(new Promise(paramResolve => {
 
-                    // get the artist
-                    getArtist(param.artist).then(artist => {
+                        // determine what api calls to perform based on the option
+                        if (param.type === 'random') {
 
-                        let { id, name } = artist;
+                            // get the artist
+                            getArtist(param.artist).then(artist => {
 
-                        // get all albums
-                        getArtistsAlbums(id).then(albums => {
+                                let { id, name } = artist;
 
-                            // store album ids in an array
-                            let albumArray = albums.map(album => album.id);
+                                // get all albums
+                                getArtistsAlbums(id).then(albums => {
 
-                            // create promises for the api calls for each album
-                            let trackPromises = [];
+                                    // store album ids in an array
+                                    let albumArray = albums.map(album => album.id);
 
-                            // array to store all the ids for artist's tracks
-                            let allArtistTracks = [];
+                                    // create promises for the api calls for each album
+                                    let trackPromises = [];
 
-                            // populate "allArtistTracks" with the IDs
-                            albumArray.map(albumId => {
-                                trackPromises.push(new Promise(tracksResolve => {
-                                    getAlbumTracks(albumId).then(tracks => {
+                                    // array to store all the ids for artist's tracks
+                                    let allArtistTracks = [];
 
-                                        tracks.map(track => {
-                                            allArtistTracks.push(track.uri);
+                                    // populate "allArtistTracks" with the IDs
+                                    albumArray.map(albumId => {
+                                        trackPromises.push(new Promise(tracksResolve => {
+                                            getAlbumTracks(albumId).then(tracks => {
+
+                                                tracks.map(track => {
+                                                    allArtistTracks.push(track.uri);
+                                                })
+
+                                                tracksResolve();
+                                            })
+                                        }))
+                                    })
+
+                                    Promise.all(trackPromises).then(() => {
+
+                                        // select a random amount of tracks from the array into the "allTracks" array
+                                        allArtistTracks.sort(() => .5 - Math.random()).slice(0, param.trackCount).map(trackId => {
+                                            allTracks.push(trackId);
                                         })
 
-                                        tracksResolve();
+                                        paramResolve();
                                     })
-                                }))
-                            })
-
-                            Promise.all(trackPromises).then(() => {
-
-                                // select a random amount of tracks from the array into the "allTracks" array
-                                allArtistTracks.sort(() => .5 - Math.random()).slice(0, param.amount).map(trackId => {
-                                    allTracks.push(trackId);
                                 })
-
-                                paramResolve();
                             })
-                        })
-                    })
-                } else {
+                        } else {
 
-                    // search for the artist
-                    getArtist(param.artist).then(artist => {
+                            // search for the artist
+                            getArtist(param.artist).then(artist => {
 
-                        let { id, name } = artist;
+                                let { id, name } = artist;
 
-                        // get the artist's top tracks
-                        getArtistsTopTracks(id).then(tracks => {
+                                // get the artist's top tracks
+                                getArtistsTopTracks(id).then(tracks => {
 
-                            // add the desired amount of tracks to the "allTracks" array
-                            tracks.slice(0, param.amount).map(t => {
-                                allTracks.push(t.uri);
+                                    // add the desired amount of tracks to the "allTracks" array
+                                    tracks.slice(0, param.trackCount).map(t => {
+                                        allTracks.push(t.uri);
+                                    })
+
+                                    paramResolve();
+                                })
                             })
+                        }
+                    }))
+                })
 
-                            paramResolve();
-                        })
-                    })
-                }
-            }))
-        })
+                // once all params have been processed we have a full array of the track IDs
+                Promise.all(paramPromises).then(() => {
+                    // here would be where we would actually create the playlist
+                    apiCall('me/playlists', 'GET', {}).then(playlists => {
 
-        // once all params have been processed we have a full array of the track IDs
-        Promise.all(paramPromises).then(() => {
+                        let existingPlaylist = playlists.items.find(p => p.name === playlist.name);
 
-            console.log('Actual track count: ', allTracks.length);
-            console.log('');
-
-            // here would be where we would actually create the playlist
-            apiCall('me/playlists', 'GET', {}).then(playlists => {
-
-                let existingPlaylist = playlists.items.find(p => p.name === options.name);
-
-                // see if the playlist already exists
-                if (existingPlaylist) {
-                    // playlist exists so we replace the tracks
-                    apiCall(`playlists/${existingPlaylist.id}/tracks`, 'PUT', { uris: [] }).then(() => {
-                        apiCall(`playlists/${existingPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
-                            console.log(`Tracks replaced in "${existingPlaylist.name}" playlist.`);
-                            console.log('');
-                            mainResolve();
-                        })
-                    })
-                } else {
-                    // playlist doesn't exist so create it and insert the tracks
-                    apiCall('me', 'GET', {}).then(user => {
-                        apiCall(`users/${user.id}/playlists`, 'POST', { name: options.name, public: options.public }).then(newPlaylist => {
-                            apiCall(`playlists/${newPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
-                                console.log(`"${newPlaylist.name}" playlist created and tracks inserted`);
-                                console.log('');
-                                mainResolve();
+                        // see if the playlist already exists
+                        if (existingPlaylist) {
+                            // playlist exists so we replace the tracks
+                            apiCall(`playlists/${existingPlaylist.id}/tracks`, 'PUT', { uris: [] }).then(() => {
+                                apiCall(`playlists/${existingPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
+                                    console.log(`Tracks replaced in "${existingPlaylist.name}" playlist.`);
+                                    console.log('');
+                                    mainResolve();
+                                })
                             })
-                        })
+                        } else {
+                            // playlist doesn't exist so create it and insert the tracks
+                            apiCall('me', 'GET', {}).then(user => {
+                                apiCall(`users/${user.id}/playlists`, 'POST', { name: playlist.name, public: playlist.options.public }).then(newPlaylist => {
+                                    apiCall(`playlists/${newPlaylist.id}/tracks`, 'POST', { uris: allTracks }).then(() => {
+                                        console.log(`"${newPlaylist.name}" playlist created and tracks inserted`);
+                                        console.log('');
+                                        mainResolve();
+                                    })
+                                })
+                            })
+                        }
                     })
-                }
-            })
+                })
+
+            } else {
+                mainResolve(undefined);
+            }
+
         })
     })
 }
@@ -294,5 +399,8 @@ export {
     getArtistsAlbums,
     getArtistsTopTracks,
     getAlbumTracks,
-    buildPlaylist
+    buildPlaylist,
+    getUserData,
+    getUserPlaylists,
+    deletePlaylist
 }

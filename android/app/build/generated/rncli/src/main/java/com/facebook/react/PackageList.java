@@ -26,6 +26,8 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
 import com.swmansion.rnscreens.RNScreensPackage;
+// react-native-uuid-generator
+import io.github.traviskn.rnuuidgenerator.RNUUIDGeneratorPackage;
 // react-native-vector-icons
 import com.oblador.vectoricons.VectorIconsPackage;
 
@@ -79,6 +81,7 @@ public class PackageList {
       new RNGestureHandlerPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
+      new RNUUIDGeneratorPackage(),
       new VectorIconsPackage()
     ));
   }
